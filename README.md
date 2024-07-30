@@ -1,0 +1,2 @@
+# preedit-highlight-popup
+ibus使用時に未確定文字列のハイライト部分を装飾してポップアップ表示するGnome拡張機能
