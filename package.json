@@ -1,0 +1,11 @@
+{
+  "name": "preedit-highlight-popup",
+  "version": "1.0.0",
+  "description": "Pop-up active segment in preedit text when using Japanese IME.",
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.1.0",
+    "@eslint/js": "^9.8.0",
+    "eslint": "^9.8.0",
+    "eslint-plugin-jsdoc": "^48.10.2"
+  }
+}
