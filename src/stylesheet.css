@@ -1,0 +1,8 @@
+StBoxLayout.bunsetu-popup-content {
+    spacing: 0;
+}
+
+.bunsetu-popup-target-text {
+    text-decoration: underline;
+    font-weight: bold;
+}
