@@ -1,7 +1,7 @@
 {
-  "name": "Bunsetu Popup",
+  "name": "Preedit Highlight Popup",
   "description": "Popup bunsetu to be converted in pre-edit",
-  "uuid": "bunsetu-popup@nishi-yuki.github.com",
+  "uuid": "preedit-highlight-popup@nishi-yuki.github.com",
   "shell-version": [
     "46"
   ]
