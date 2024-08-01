@@ -40,21 +40,21 @@ const PreeditHighlightPopup = GObject.registerClass({},
             });
             this.bin.set_child(box);
 
-            this._beforeTargetBunsetuText = new St.Label({
+            this._beforeTargetSegment = new St.Label({
                 style_class: 'preedit-highlight-popup-non-target-text',
                 visible: true,
             });
-            this._targetBunsetuText = new St.Label({
+            this._targetSegment = new St.Label({
                 style_class: 'preedit-highlight-popup-target-text',
                 visible: true,
             });
-            this._afterTargetBunsetuText = new St.Label({
+            this._afterTargetSegment = new St.Label({
                 style_class: 'preedit-highlight-popup-non-target-text',
                 visible: true,
             });
-            box.add_child(this._beforeTargetBunsetuText);
-            box.add_child(this._targetBunsetuText);
-            box.add_child(this._afterTargetBunsetuText);
+            box.add_child(this._beforeTargetSegment);
+            box.add_child(this._targetSegment);
+            box.add_child(this._afterTargetSegment);
 
 
             this._ibusManager = getIBusManager();
@@ -134,9 +134,9 @@ const PreeditHighlightPopup = GObject.registerClass({},
                     visible = true;
                     let start = attr.get_start_index();
                     let end = attr.get_end_index();
-                    this._beforeTargetBunsetuText.text = text.slice(0, start);
-                    this._targetBunsetuText.text       = text.slice(start, end);
-                    this._afterTargetBunsetuText.text  = text.slice(end);
+                    this._beforeTargetSegment.text = text.slice(0, start);
+                    this._targetSegment.text       = text.slice(start, end);
+                    this._afterTargetSegment.text  = text.slice(end);
                     break;
                 }
             }
@@ -165,9 +165,9 @@ const PreeditHighlightPopup = GObject.registerClass({},
         }
 
         _clearLabels() {
-            this._beforeTargetBunsetuText.text = '';
-            this._targetBunsetuText.text = '';
-            this._afterTargetBunsetuText.text = '';
+            this._beforeTargetSegment.text = '';
+            this._targetSegment.text = '';
+            this._afterTargetSegment.text = '';
         }
 
         destroy() {
