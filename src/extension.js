@@ -26,8 +26,8 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as BoxPointer from 'resource:///org/gnome/shell/ui/boxpointer.js';
 import {getIBusManager} from 'resource:///org/gnome/shell/misc/ibusManager.js';
 
-const BunsetuPopup = GObject.registerClass({},
-    class BunsetuPopup extends BoxPointer.BoxPointer {
+const PreeditHighlightPopup = GObject.registerClass({},
+    class PreeditHighlightPopup extends BoxPointer.BoxPointer {
         _init() {
             super._init(St.Side.TOP);
             this._dummyCursor = new Clutter.Actor({opacity: 0});
@@ -189,14 +189,14 @@ const BunsetuPopup = GObject.registerClass({},
         }
     });
 
-export default class BunsetuPopupExtension extends Extension {
+export default class PreeditHighlightPopupExtension extends Extension {
     enable() {
-        this._bunsetuPopup = new BunsetuPopup();
+        this._preeditHighlightPopup = new PreeditHighlightPopup();
     }
 
     disable() {
-        this._bunsetuPopup.destroy();
-        delete this._bunsetuPopup;
+        this._preeditHighlightPopup.destroy();
+        delete this._preeditHighlightPopup;
     }
 }
 
