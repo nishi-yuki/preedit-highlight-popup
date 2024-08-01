@@ -2,6 +2,9 @@
 
 build: bunsetu-popup@nishi-yuki.github.com.shell-extension.zip
 
+clean:
+	rm -f bunsetu-popup@nishi-yuki.github.com.shell-extension.zip
+
 install: bunsetu-popup@nishi-yuki.github.com.shell-extension.zip
 	gnome-extensions install bunsetu-popup@nishi-yuki.github.com.shell-extension.zip --force
 
