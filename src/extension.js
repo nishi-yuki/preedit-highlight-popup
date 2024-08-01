@@ -113,7 +113,7 @@ const PreeditHighlightPopup = GObject.registerClass({},
 
 
             this._updatePreeditTextWithModeID = inputContext.connect('update-preedit-text-with-mode', (_con, text, pos, _visible, _mode) => {
-                this._setBunsetuText(text, pos);
+                this._setPreeditText(text, pos);
             });
 
             this._commitTextID = inputContext.connect('commit-text', (_con, _text) => {
@@ -123,7 +123,7 @@ const PreeditHighlightPopup = GObject.registerClass({},
             });
         }
 
-        _setBunsetuText(ibusText, pos) {
+        _setPreeditText(ibusText, pos) {
             let text = ibusText.get_text();
             let attrs = ibusText.get_attributes();
             let attr;
