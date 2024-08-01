@@ -1,8 +1,8 @@
-StBoxLayout.bunsetu-popup-content {
+StBoxLayout.preedit-highlight-popup-content {
     spacing: 0;
 }
 
-.bunsetu-popup-target-text {
+.preedit-highlight-popup-target-text {
     text-decoration: underline;
     font-weight: bold;
 }

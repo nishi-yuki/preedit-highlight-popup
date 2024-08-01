@@ -35,21 +35,21 @@ const BunsetuPopup = GObject.registerClass({},
             Main.layoutManager.addTopChrome(this);
 
             const box = new St.BoxLayout({
-                style_class: 'candidate-popup-content bunsetu-popup-content',
+                style_class: 'candidate-popup-content preedit-highlight-popup-content',
                 vertical: false,
             });
             this.bin.set_child(box);
 
             this._beforeTargetBunsetuText = new St.Label({
-                style_class: 'bunsetu-popup-non-target-text',
+                style_class: 'preedit-highlight-popup-non-target-text',
                 visible: true,
             });
             this._targetBunsetuText = new St.Label({
-                style_class: 'bunsetu-popup-target-text',
+                style_class: 'preedit-highlight-popup-target-text',
                 visible: true,
             });
             this._afterTargetBunsetuText = new St.Label({
-                style_class: 'bunsetu-popup-non-target-text',
+                style_class: 'preedit-highlight-popup-non-target-text',
                 visible: true,
             });
             box.add_child(this._beforeTargetBunsetuText);
