@@ -58,7 +58,6 @@ const PreeditHighlightPopup = GObject.registerClass({},
 
 
             this._ibusManager = getIBusManager();
-            this._panelService = null;
             this._inputContext = null;
 
             this._onFocusWindowID = global.display.connect(
@@ -73,38 +72,21 @@ const PreeditHighlightPopup = GObject.registerClass({},
         }
 
         _onFocusWindow() {
-            if (this._panelService !== this._ibusManager._panelService) {
-                this._panelService = this._ibusManager._panelService;
-                this._connectPanelService(this._ibusManager._panelService);
-            }
-
             if (this._inputContext !== Main.inputMethod._context) {
                 this._inputContext = Main.inputMethod._context;
                 this._connectInputContext(Main.inputMethod._context);
             }
         }
 
-        _connectPanelService(panelService) {
-            if (!panelService)
-                return;
-
-            this._setCursorLocationID = panelService.connect('set-cursor-location', (_ps, x, y, w, h) => {
-                this._setDummyCursorGeometry(x, y, w, h);
-            });
-
-            this._setCursorLocationRelativeID = panelService.connect('set-cursor-location-relative', (_ps, x, y, w, h) => {
-                if (!global.display.focus_window)
-                    return;
-                let window = global.display.focus_window.get_compositor_private();
-                this._setDummyCursorGeometry(window.x + x, window.y + y, w, h);
-            });
+        _updatePopupLocation() {
+            const {x, y, width, height} = Main.inputMethod._cursorRect;
+            this._setDummyCursorGeometry(x, y, width, height);
         }
 
         _setDummyCursorGeometry(x, y, w, h) {
             this._dummyCursor.set_position(Math.round(x), Math.round(y));
             this._dummyCursor.set_size(Math.round(w), Math.round(h));
             this.setPosition(this._dummyCursor, 0);
-            this._updateVisibility();
         }
 
         _connectInputContext(inputContext) {
@@ -145,6 +127,7 @@ const PreeditHighlightPopup = GObject.registerClass({},
             if (!visible)
                 this._clearLabels();
 
+            this._updatePopupLocation();
 
             // 変換候補選択後に別の文節に移動したときは必ずポップアップを表示する
             let moved = this._lastCursorPos !== pos;
@@ -172,12 +155,6 @@ const PreeditHighlightPopup = GObject.registerClass({},
 
         destroy() {
             global.display.disconnect(this._onFocusWindowID);
-            if (this._setCursorLocationID)
-                this._panelService.disconnect(this._setCursorLocationID);
-
-            if (this._setCursorLocationRelativeID)
-                this._panelService.disconnect(this._setCursorLocationRelativeID);
-
             if (this._updatePreeditTextWithModeID)
                 this._inputContext.disconnect(this._updatePreeditTextWithModeID);
 
