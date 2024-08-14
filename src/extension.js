@@ -24,7 +24,6 @@ import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as BoxPointer from 'resource:///org/gnome/shell/ui/boxpointer.js';
-import {getIBusManager} from 'resource:///org/gnome/shell/misc/ibusManager.js';
 
 const PreeditHighlightPopup = GObject.registerClass({},
     class PreeditHighlightPopup extends BoxPointer.BoxPointer {
@@ -57,7 +56,6 @@ const PreeditHighlightPopup = GObject.registerClass({},
             box.add_child(this._afterTargetSegment);
 
 
-            this._ibusManager = getIBusManager();
             this._inputContext = null;
 
             this._onFocusWindowID = global.display.connect(
@@ -136,7 +134,8 @@ const PreeditHighlightPopup = GObject.registerClass({},
         }
 
         _updateVisibility(ignoreCandidatePopup = false) {
-            let isVisible = this._visible && (!this._ibusManager._candidatePopup.visible || ignoreCandidatePopup);
+            const ibusPopupVisible = Main.inputMethod._inputSourceManager._ibusManager?._candidatePopup?.visible;
+            const isVisible = this._visible && (!ibusPopupVisible || ignoreCandidatePopup);
 
             if (isVisible) {
                 this.setPosition(this._dummyCursor, 0);
