@@ -77,6 +77,8 @@ const PreeditHighlightPopup = GObject.registerClass({},
         }
 
         _updatePopupLocation() {
+            if (!Main.inputMethod._cursorRect)
+                return;
             const {x, y, width, height} = Main.inputMethod._cursorRect;
             this._setDummyCursorGeometry(x, y, width, height);
         }
