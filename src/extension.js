@@ -70,7 +70,7 @@ const PreeditHighlightPopup = GObject.registerClass({},
         }
 
         _onFocusWindow() {
-            if (this._inputContext !== Main.inputMethod._context) {
+            if (Main.inputMethod._context && this._inputContext !== Main.inputMethod._context) {
                 this._inputContext = Main.inputMethod._context;
                 this._connectInputContext(Main.inputMethod._context);
             }
