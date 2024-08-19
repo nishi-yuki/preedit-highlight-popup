@@ -56,14 +56,16 @@ const PreeditHighlightPopup = GObject.registerClass({},
             box.add_child(this._targetSegment);
             box.add_child(this._afterTargetSegment);
 
-
             this._ibusManager = getIBusManager();
-            this._panelService = null;
             this._inputContext = null;
 
             this._onFocusWindowID = global.display.connect(
                 'notify::focus-window', this._onFocusWindow.bind(this)
             );
+
+            this._onCursorLocationChanged = Main.inputMethod.connect('cursor-location-changed', (_im, rect) => {
+                this._setDummyCursorGeometry(rect.get_x(), rect.get_y(), rect.get_width(), rect.get_height());
+            });
 
             this._visible = false;
             this._lastCursorPos = 0;
@@ -73,31 +75,10 @@ const PreeditHighlightPopup = GObject.registerClass({},
         }
 
         _onFocusWindow() {
-            if (this._panelService !== this._ibusManager._panelService) {
-                this._panelService = this._ibusManager._panelService;
-                this._connectPanelService(this._ibusManager._panelService);
-            }
-
             if (this._inputContext !== Main.inputMethod._context) {
                 this._inputContext = Main.inputMethod._context;
                 this._connectInputContext(Main.inputMethod._context);
             }
-        }
-
-        _connectPanelService(panelService) {
-            if (!panelService)
-                return;
-
-            this._setCursorLocationID = panelService.connect('set-cursor-location', (_ps, x, y, w, h) => {
-                this._setDummyCursorGeometry(x, y, w, h);
-            });
-
-            this._setCursorLocationRelativeID = panelService.connect('set-cursor-location-relative', (_ps, x, y, w, h) => {
-                if (!global.display.focus_window)
-                    return;
-                let window = global.display.focus_window.get_compositor_private();
-                this._setDummyCursorGeometry(window.x + x, window.y + y, w, h);
-            });
         }
 
         _setDummyCursorGeometry(x, y, w, h) {
@@ -172,11 +153,7 @@ const PreeditHighlightPopup = GObject.registerClass({},
 
         destroy() {
             global.display.disconnect(this._onFocusWindowID);
-            if (this._setCursorLocationID)
-                this._panelService.disconnect(this._setCursorLocationID);
-
-            if (this._setCursorLocationRelativeID)
-                this._panelService.disconnect(this._setCursorLocationRelativeID);
+            Main.inputMethod.disconnect(this._onCursorLocationChanged);
 
             if (this._updatePreeditTextWithModeID)
                 this._inputContext.disconnect(this._updatePreeditTextWithModeID);
