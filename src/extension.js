@@ -139,6 +139,8 @@ const PreeditHighlightPopup = GObject.registerClass({},
             if (isVisible) {
                 this.setPosition(this._dummyCursor, 0);
                 this.open(BoxPointer.PopupAnimation.NONE);
+                // fcitxの候補ウィンドウはtop_window_groupの位置に表示される
+                // top_window_groupのすぐ下にポップアップを表示することで、候補ウィンドウが隠されなくなる
                 this.get_parent().set_child_below_sibling(this, global.top_window_group);
             } else {
                 this.close(BoxPointer.PopupAnimation.NONE);
