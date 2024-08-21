@@ -139,7 +139,7 @@ const PreeditHighlightPopup = GObject.registerClass({},
             if (isVisible) {
                 this.setPosition(this._dummyCursor, 0);
                 this.open(BoxPointer.PopupAnimation.NONE);
-                this.get_parent().set_child_above_sibling(this, null);
+                this.get_parent().set_child_below_sibling(this, global.top_window_group);
             } else {
                 this.close(BoxPointer.PopupAnimation.NONE);
             }
