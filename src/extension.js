@@ -24,7 +24,6 @@ import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as BoxPointer from 'resource:///org/gnome/shell/ui/boxpointer.js';
-import {getIBusManager} from 'resource:///org/gnome/shell/misc/ibusManager.js';
 
 const PreeditHighlightPopup = GObject.registerClass({},
     class PreeditHighlightPopup extends BoxPointer.BoxPointer {
@@ -56,7 +55,6 @@ const PreeditHighlightPopup = GObject.registerClass({},
             box.add_child(this._targetSegment);
             box.add_child(this._afterTargetSegment);
 
-            this._ibusManager = getIBusManager();
             this._inputContext = null;
 
             this._onFocusWindowID = global.display.connect(
@@ -68,7 +66,6 @@ const PreeditHighlightPopup = GObject.registerClass({},
             });
 
             this._visible = false;
-            this._lastCursorPos = 0;
 
             this._clearLabels();
             this._updateVisibility();
@@ -104,7 +101,7 @@ const PreeditHighlightPopup = GObject.registerClass({},
             });
         }
 
-        _setPreeditText(ibusText, pos) {
+        _setPreeditText(ibusText, _pos) {
             let text = ibusText.get_text();
             let attrs = ibusText.get_attributes();
             let attr;
@@ -126,15 +123,11 @@ const PreeditHighlightPopup = GObject.registerClass({},
             if (!visible)
                 this._clearLabels();
 
-
-            // 変換候補選択後に別の文節に移動したときは必ずポップアップを表示する
-            let moved = this._lastCursorPos !== pos;
-            this._lastCursorPos = pos;
-            this._updateVisibility(moved);
+            this._updateVisibility();
         }
 
-        _updateVisibility(ignoreCandidatePopup = false) {
-            let isVisible = this._visible && (!this._ibusManager._candidatePopup.visible || ignoreCandidatePopup);
+        _updateVisibility() {
+            let isVisible = this._visible;
 
             if (isVisible) {
                 this.setPosition(this._dummyCursor, 0);
