@@ -68,6 +68,8 @@ const PreeditHighlightPopup = GObject.registerClass({},
             });
 
             this._visible = false;
+            this._alignment = 0.0;
+            this._currentAlignment = 0.0;
 
             this._clearLabels();
             this._updateVisibility();
@@ -81,9 +83,10 @@ const PreeditHighlightPopup = GObject.registerClass({},
         }
 
         _setDummyCursorGeometry(x, y, w, h) {
+            this._currentAlignment = this._alignment;
             this._dummyCursor.set_position(Math.round(x), Math.round(y));
             this._dummyCursor.set_size(Math.round(w), Math.round(h));
-            this.setPosition(this._dummyCursor, 0);
+            this.setPosition(this._dummyCursor, this._currentAlignment);
             this._updateVisibility();
         }
 
@@ -101,12 +104,16 @@ const PreeditHighlightPopup = GObject.registerClass({},
             });
         }
 
-        _setPreeditText(ibusText, _pos) {
+        _setPreeditText(ibusText, pos) {
             let text = ibusText.get_text();
             let attrs = ibusText.get_attributes();
             let attr;
             let visible = false;
 
+            if (text.length > 0)
+                this._alignment = pos / text.length;
+            else
+                this._alignment = 0.0;
             for (let i = 0; (attr = attrs.get(i)); ++i) {
                 if (attr.get_attr_type() === IBus.AttrType.BACKGROUND) {
                     visible = true;
@@ -136,7 +143,7 @@ const PreeditHighlightPopup = GObject.registerClass({},
             let isVisible = this._visible;
 
             if (isVisible) {
-                this.setPosition(this._dummyCursor, 0);
+                this.setPosition(this._dummyCursor, this._currentAlignment);
                 this.open(BoxPointer.PopupAnimation.NONE);
                 // fcitxの候補ウィンドウはtop_window_groupの位置に表示される
                 // top_window_groupのすぐ下にポップアップを表示することで、候補ウィンドウが隠されなくなる
