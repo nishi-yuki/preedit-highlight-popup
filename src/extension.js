@@ -28,7 +28,7 @@ import * as BoxPointer from 'resource:///org/gnome/shell/ui/boxpointer.js';
 const PreeditHighlightPopup = GObject.registerClass({},
     class PreeditHighlightPopup extends BoxPointer.BoxPointer {
         _init() {
-            super._init(St.Side.TOP);
+            super._init(St.Side.BOTTOM);
             this._dummyCursor = new Clutter.Actor({opacity: 0});
             Main.layoutManager.uiGroup.add_child(this._dummyCursor);
             Main.layoutManager.addTopChrome(this);
