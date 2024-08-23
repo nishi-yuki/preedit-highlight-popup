@@ -66,6 +66,9 @@ const PreeditHighlightPopup = GObject.registerClass({},
                     this._setDummyCursorGeometry(rect.get_x(), rect.get_y(), rect.get_width(), rect.get_height());
             });
 
+            this._preeditText = '';
+            this._cursorPosition = 0;
+            this._alignment = 0.0;
             this._visible = false;
             this._updateVisibility();
         }
@@ -80,7 +83,9 @@ const PreeditHighlightPopup = GObject.registerClass({},
         _setDummyCursorGeometry(x, y, w, h) {
             this._dummyCursor.set_position(Math.round(x), Math.round(y));
             this._dummyCursor.set_size(Math.round(w), Math.round(h));
-            this.setPosition(this._dummyCursor, 0);
+            if (this._preeditText.length > 0)
+                this._alignment = this._cursorPosition / this._preeditText.length;
+            this.setPosition(this._dummyCursor, this._alignment);
             this._updateVisibility();
         }
 
@@ -98,8 +103,9 @@ const PreeditHighlightPopup = GObject.registerClass({},
             });
         }
 
-        _setPreeditText(ibusText, _pos) {
-            let text = ibusText.get_text();
+        _setPreeditText(ibusText, pos) {
+            this._preeditText = ibusText.get_text();
+            this._cursorPosition = pos;
             let attrs = ibusText.get_attributes();
             let attr;
             let visible = false;
@@ -109,9 +115,9 @@ const PreeditHighlightPopup = GObject.registerClass({},
                     visible = true;
                     let start = attr.get_start_index();
                     let end = attr.get_end_index();
-                    this._beforeTargetSegment.text = text.slice(0, start);
-                    this._targetSegment.text       = text.slice(start, end);
-                    this._afterTargetSegment.text  = text.slice(end);
+                    this._beforeTargetSegment.text = this._preeditText.slice(0, start);
+                    this._targetSegment.text       = this._preeditText.slice(start, end);
+                    this._afterTargetSegment.text  = this._preeditText.slice(end);
                     break;
                 }
             }
@@ -129,7 +135,7 @@ const PreeditHighlightPopup = GObject.registerClass({},
             let isVisible = this._visible && Main.inputMethod.hasPreedit();
 
             if (isVisible) {
-                this.setPosition(this._dummyCursor, 0);
+                this.setPosition(this._dummyCursor, this._alignment);
                 this.open(BoxPointer.PopupAnimation.NONE);
                 // fcitxの候補ウィンドウはtop_window_groupの位置に表示される
                 // top_window_groupのすぐ下にポップアップを表示することで、候補ウィンドウが隠されなくなる
