@@ -66,8 +66,6 @@ const PreeditHighlightPopup = GObject.registerClass({},
             });
 
             this._visible = false;
-
-            this._clearLabels();
             this._updateVisibility();
         }
 
@@ -96,7 +94,6 @@ const PreeditHighlightPopup = GObject.registerClass({},
 
             this._commitTextID = inputContext.connect('commit-text', (_con, _text) => {
                 this._visible = false;
-                this._clearLabels();
                 this._updateVisibility();
             });
         }
@@ -120,9 +117,11 @@ const PreeditHighlightPopup = GObject.registerClass({},
             }
 
             this._visible = visible;
-            if (!visible)
-                this._clearLabels();
-
+            if (!visible) {
+                this._beforeTargetSegment.text = '';
+                this._targetSegment.text = '';
+                this._afterTargetSegment.text = '';
+            }
             this._updateVisibility();
         }
 
@@ -138,12 +137,6 @@ const PreeditHighlightPopup = GObject.registerClass({},
             } else {
                 this.close(BoxPointer.PopupAnimation.NONE);
             }
-        }
-
-        _clearLabels() {
-            this._beforeTargetSegment.text = '';
-            this._targetSegment.text = '';
-            this._afterTargetSegment.text = '';
         }
 
         destroy() {
