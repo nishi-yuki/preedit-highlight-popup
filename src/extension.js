@@ -62,7 +62,8 @@ const PreeditHighlightPopup = GObject.registerClass({},
             );
 
             this._onCursorLocationChanged = Main.inputMethod.connect('cursor-location-changed', (_im, rect) => {
-                this._setDummyCursorGeometry(rect.get_x(), rect.get_y(), rect.get_width(), rect.get_height());
+                if (this._visible || Main.inputMethod.hasPreedit())
+                    this._setDummyCursorGeometry(rect.get_x(), rect.get_y(), rect.get_width(), rect.get_height());
             });
 
             this._visible = false;
