@@ -87,7 +87,6 @@ const PreeditHighlightPopup = GObject.registerClass({},
             if (!inputContext)
                 return;
 
-
             this._updatePreeditTextWithModeID = inputContext.connect('update-preedit-text-with-mode', (_con, text, pos, _visible, _mode) => {
                 this._setPreeditText(text, pos);
             });
