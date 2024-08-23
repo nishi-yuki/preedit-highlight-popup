@@ -127,7 +127,7 @@ const PreeditHighlightPopup = GObject.registerClass({},
         }
 
         _updateVisibility() {
-            let isVisible = this._visible;
+            let isVisible = this._visible && Main.inputMethod.hasPreedit();
 
             if (isVisible) {
                 this.setPosition(this._dummyCursor, 0);
