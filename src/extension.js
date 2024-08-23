@@ -63,8 +63,6 @@ const PreeditHighlightPopup = GObject.registerClass({},
 
             this._onCursorLocationChanged = Main.inputMethod.connect('cursor-location-changed', (_im, rect) => {
                 this._setDummyCursorGeometry(rect.get_x(), rect.get_y(), rect.get_width(), rect.get_height());
-                if (!Main.inputMethod.hasPreedit())
-                    this._reset();
             });
 
             this._visible = false;
@@ -97,7 +95,9 @@ const PreeditHighlightPopup = GObject.registerClass({},
             });
 
             this._commitTextID = inputContext.connect('commit-text', (_con, _text) => {
-                this._reset();
+                this._visible = false;
+                this._clearLabels();
+                this._updateVisibility();
             });
         }
 
@@ -123,12 +123,6 @@ const PreeditHighlightPopup = GObject.registerClass({},
             if (!visible)
                 this._clearLabels();
 
-            this._updateVisibility();
-        }
-
-        _reset() {
-            this._visible = false;
-            this._clearLabels();
             this._updateVisibility();
         }
 
