@@ -25,10 +25,22 @@ import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as BoxPointer from 'resource:///org/gnome/shell/ui/boxpointer.js';
 
+// St.Side.BOTTOMのとき上に、St.Side.TOPのとき下に表示される
+// そのため、prefs.jsの表示と逆にする必要がある
+const positionOptions = [St.Side.BOTTOM, St.Side.TOP];
+
 const PreeditHighlightPopup = GObject.registerClass({},
     class PreeditHighlightPopup extends BoxPointer.BoxPointer {
-        _init() {
-            super._init(St.Side.BOTTOM);
+        _init(settings) {
+            this._settings = settings;
+            super._init(positionOptions[this._settings.get_uint('popup-position')]);
+
+            this._settings.connect('changed::popup-position', (st, key) => {
+                const arrowSide = positionOptions[st.get_uint(key)];
+                this._userArrowSide = arrowSide;
+                this.updateArrowSide(arrowSide);
+            });
+
             this._dummyCursor = new Clutter.Actor({opacity: 0});
             Main.layoutManager.uiGroup.add_child(this._dummyCursor);
             Main.layoutManager.addTopChrome(this);
@@ -148,6 +160,8 @@ const PreeditHighlightPopup = GObject.registerClass({},
         }
 
         destroy() {
+            this._settings = null;
+
             global.display.disconnect(this._onFocusWindowID);
             Main.inputMethod.disconnect(this._onCursorLocationChanged);
 
@@ -164,7 +178,7 @@ const PreeditHighlightPopup = GObject.registerClass({},
 
 export default class PreeditHighlightPopupExtension extends Extension {
     enable() {
-        this._preeditHighlightPopup = new PreeditHighlightPopup();
+        this._preeditHighlightPopup = new PreeditHighlightPopup(this.getSettings());
     }
 
     disable() {
