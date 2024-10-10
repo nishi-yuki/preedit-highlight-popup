@@ -99,8 +99,7 @@ const PreeditHighlightPopup = GObject.registerClass({},
                 this._alignment = this._cursorPosition / this._preeditText.length;
             else
                 this._alignment = 0.0;
-            // this.setPosition(this._dummyCursor, this._alignment);
-            this._updateVisibility();
+            this.setPosition(this._dummyCursor, this._alignment);
         }
 
         _connectInputContext(inputContext) {
