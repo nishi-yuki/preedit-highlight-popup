@@ -132,6 +132,19 @@ const PreeditHighlightPopup = GObject.registerClass({},
                 return rgb;
             }
 
+            function ibusUnderline2Pango(underline) {
+                switch (underline) {
+                case IBus.AttrUnderline.DOUBLE:
+                    return Pango.Underline.DOUBLE;
+                case IBus.AttrUnderline.ERROR:
+                    return Pango.Underline.ERROR;
+                case IBus.AttrUnderline.SINGLE:
+                    return Pango.Underline.SINGLE;
+                default:
+                    return Pango.Underline.NONE;
+                }
+            }
+
             const text = ibusText.get_text();
             this._cursorPosition = pos;
             let attrs = ibusText.get_attributes();
@@ -152,6 +165,10 @@ const PreeditHighlightPopup = GObject.registerClass({},
                     break;
                 case IBus.AttrType.FOREGROUND:
                     pangoAttr = Pango.attr_foreground_new(...uint2rgb(value));
+                    break;
+                case IBus.AttrType.UNDERLINE:
+                    pangoAttr = Pango.attr_underline_new(ibusUnderline2Pango(value));
+                    break;
                 }
 
                 if (pangoAttr) {
