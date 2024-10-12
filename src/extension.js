@@ -123,6 +123,15 @@ const PreeditHighlightPopup = GObject.registerClass({},
         }
 
         _setPreeditText(ibusText, pos) {
+            function uint2rgb(uint) {
+                const rgb = new Array(3);
+                for (let i = 2; i >= 0; i--) {
+                    let octet = uint >> (8 * i) & 0xff;
+                    rgb[2 - i] = (octet << 8) | octet;
+                }
+                return rgb;
+            }
+
             const text = ibusText.get_text();
             this._cursorPosition = pos;
             let attrs = ibusText.get_attributes();
@@ -137,17 +146,12 @@ const PreeditHighlightPopup = GObject.registerClass({},
                 let pangoAttr;
 
                 switch (attr.get_attr_type()) {
-                case IBus.AttrType.BACKGROUND: {
+                case IBus.AttrType.BACKGROUND:
                     visible = true;
-                    // int to rgb
-                    const rgb = new Array(3);
-                    for (let j = 2; j >= 0; j--) {
-                        let t = value >> (8 * j) & 0xff;
-                        rgb[2 - j] = (t << 8) | t;
-                    }
-                    pangoAttr = Pango.attr_background_new(...rgb);
+                    pangoAttr = Pango.attr_background_new(...uint2rgb(value));
                     break;
-                }
+                case IBus.AttrType.FOREGROUND:
+                    pangoAttr = Pango.attr_foreground_new(...uint2rgb(value));
                 }
 
                 if (pangoAttr) {
