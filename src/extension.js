@@ -57,18 +57,6 @@ const PreeditHighlightPopup = GObject.registerClass({},
                 visible: true,
             });
 
-            // this._beforeTargetSegment = new St.Label({
-            //     style_class: 'preedit-highlight-popup-non-target-text',
-            //     visible: true,
-            // });
-            // this._targetSegment = new St.Label({
-            //     style_class: 'preedit-highlight-popup-target-text',
-            //     visible: true,
-            // });
-            // this._afterTargetSegment = new St.Label({
-            //     style_class: 'preedit-highlight-popup-non-target-text',
-            //     visible: true,
-            // });
             box.add_child(this._preeditTextLabel);
 
             this._inputContext = null;
