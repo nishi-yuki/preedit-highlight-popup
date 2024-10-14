@@ -1,8 +1,5 @@
 StBoxLayout.preedit-highlight-popup-content {
     spacing: 0;
-}
-
-.preedit-highlight-popup-target-text {
-    text-decoration: underline;
-    font-weight: bold;
+    color: black;
+    background-color: white;
 }
