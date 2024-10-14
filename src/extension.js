@@ -16,6 +16,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 import Clutter from 'gi://Clutter';
+import Pango from 'gi://Pango';
 import GObject from 'gi://GObject';
 import IBus from 'gi://IBus';
 import St from 'gi://St';
@@ -51,21 +52,12 @@ const PreeditHighlightPopup = GObject.registerClass({},
             });
             this.bin.set_child(box);
 
-            this._beforeTargetSegment = new St.Label({
-                style_class: 'preedit-highlight-popup-non-target-text',
+            this._preeditTextLabel = new St.Label({
+                style_class: 'preedit-highlight-popup-text',
                 visible: true,
             });
-            this._targetSegment = new St.Label({
-                style_class: 'preedit-highlight-popup-target-text',
-                visible: true,
-            });
-            this._afterTargetSegment = new St.Label({
-                style_class: 'preedit-highlight-popup-non-target-text',
-                visible: true,
-            });
-            box.add_child(this._beforeTargetSegment);
-            box.add_child(this._targetSegment);
-            box.add_child(this._afterTargetSegment);
+
+            box.add_child(this._preeditTextLabel);
 
             this._inputContext = null;
 
@@ -83,6 +75,8 @@ const PreeditHighlightPopup = GObject.registerClass({},
             this._alignment = 0.0;
             this._visible = false;
             this._updateVisibility();
+
+            this._encoder = new TextEncoder();
         }
 
         _onFocusWindow() {
@@ -117,30 +111,70 @@ const PreeditHighlightPopup = GObject.registerClass({},
         }
 
         _setPreeditText(ibusText, pos) {
-            this._preeditText = ibusText.get_text();
+            function uint2rgb(uint) {
+                const rgb = new Array(3);
+                for (let i = 2; i >= 0; i--) {
+                    let octet = uint >> (8 * i) & 0xff;
+                    rgb[2 - i] = (octet << 8) | octet;
+                }
+                return rgb;
+            }
+
+            function ibusUnderline2Pango(underline) {
+                switch (underline) {
+                case IBus.AttrUnderline.DOUBLE:
+                    return Pango.Underline.DOUBLE;
+                case IBus.AttrUnderline.ERROR:
+                    return Pango.Underline.ERROR;
+                case IBus.AttrUnderline.SINGLE:
+                    return Pango.Underline.SINGLE;
+                default:
+                    return Pango.Underline.NONE;
+                }
+            }
+
+            const text = ibusText.get_text();
             this._cursorPosition = pos;
             let attrs = ibusText.get_attributes();
             let attr;
             let visible = false;
 
+            const pangoAttrList = new Pango.AttrList();
             for (let i = 0; (attr = attrs.get(i)); ++i) {
-                if (attr.get_attr_type() === IBus.AttrType.BACKGROUND) {
+                const start = this._encoder.encode(text.slice(0, attr.get_start_index())).byteLength;
+                const end   = this._encoder.encode(text.slice(0, attr.get_end_index())).byteLength;
+                const value = attr.get_value();
+                let pangoAttr;
+
+                switch (attr.get_attr_type()) {
+                case IBus.AttrType.BACKGROUND:
                     visible = true;
-                    let start = attr.get_start_index();
-                    let end = attr.get_end_index();
-                    this._beforeTargetSegment.text = this._preeditText.slice(0, start);
-                    this._targetSegment.text       = this._preeditText.slice(start, end);
-                    this._afterTargetSegment.text  = this._preeditText.slice(end);
+                    pangoAttr = Pango.attr_background_new(...uint2rgb(value));
                     break;
+                case IBus.AttrType.FOREGROUND:
+                    pangoAttr = Pango.attr_foreground_new(...uint2rgb(value));
+                    break;
+                case IBus.AttrType.UNDERLINE:
+                    pangoAttr = Pango.attr_underline_new(ibusUnderline2Pango(value));
+                    break;
+                }
+
+                if (pangoAttr) {
+                    pangoAttr.start_index = start;
+                    pangoAttr.end_index = end;
+                    pangoAttrList.insert(pangoAttr);
                 }
             }
 
+            this._preeditText = text;
             this._visible = visible;
-            if (!visible) {
-                this._beforeTargetSegment.text = '';
-                this._targetSegment.text = '';
-                this._afterTargetSegment.text = '';
+            if (visible) {
+                this._preeditTextLabel.text = this._preeditText;
+                this._preeditTextLabel.clutter_text.attributes = pangoAttrList;
+            } else {
+                this._preeditTextLabel.text = '';
             }
+
             this._updateVisibility();
         }
 
